@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.xrq.mapper.DepartmentsMapper">
+
+
+    <!-- 根据所有一级科室的信息
+        如果参数仅有一个,则#{名}参数名没有要求
+    -->
+    <select id="selectDepartmentsByLevel" resultType="com.xrq.pojo.Departments">
+        select *
+        from departments
+        where department_level=#{departmentLevel}
+    </select>
+
+<!-- 添加新科室，并返回新生成的主键
+添加时，方法参数为科室对象，因此参数占位符名必须与属性名相同
+ useGeneratedKeys="true" 表示是否返回新增后的自增主键值，true，返回，false不返回
+ keyProperty：表示自增主值返回给实体类中的对应属性名 -->
+<insert id="addDepartment" keyProperty="departmentId" useGeneratedKeys="true">
+    insert into departments(department_name,department_pid,department_level,department_description)
+    values (#{departmentName},#{departmentPid},#{departmentLevel},#{departmentDescription})
+</insert>
+
+<!-- 修改指定科室的路径 -->
+<update id="changePath">
+    update departments
+    set department_path =#{departmentPath}
+    where department_id =#{departmentId}
+</update>
+
+    <!-- 查询指定编号的科室信息 -->
+<select id="selectById" resultType="com.xrq.pojo.Departments">
+    select * from departments
+    where department_id = #{departmentId}
+</select>
+
+
+<!-- 根据父科室的id查询对应的子科室的集合 -->
+    <select id="selectByPid" resultType="com.xrq.pojo.Departments">
+        select *
+        from departments
+        where department_pid =#{departmentPid}
+
+    </select>
+
+
+
+
+</mapper>

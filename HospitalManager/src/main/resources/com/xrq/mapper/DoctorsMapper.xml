@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  使用mapper接口
+  namespace : 与mapper接口同包同名
+-->
+<mapper namespace="com.xrq.mapper.DoctorsMapper">
+
+    <!--resultMap:定义结果集映射-->
+    <resultMap id="doctorMap" type="com.xrq.pojo.Doctors" autoMapping="true">
+
+        <!--关联科室信息-->
+        <association property="departments" javaType="com.xrq.pojo.Departments" autoMapping="true"/>
+
+        <!--关联职称信息-->
+        <association property="titles" javaType="com.xrq.pojo.ProfessionalTitles" autoMapping="true"/>
+
+    </resultMap>
+
+<!--多条件查询医生信息
+科室ID，职称ID，医生姓名，工号
+使用动态SQL添加条件-->
+
+
+
+    <!-- 根据编号查询员工信息
+        如果参数仅有一个,则#{名}参数名没有要求
+    -->
+    <select id="selectDoctorAll" resultMap="doctorMap">
+        select d.*,dt.*,pt.*
+        from doctors d left join departments dt on d.department_id=dt.department_id
+                       left join professional_titles pt on d.professional_title_id=pt.id
+        <where>
+            <if test="departmentId!=null">
+                d.department_id=#{departmentId}
+            </if>
+        <if test="titleId!=null">
+            and d.professional_title_id = #{titleId}
+        </if>
+        <if test="doctorName!=null">
+            and d.name like concat('%',#{doctorName},'%')
+        </if>
+        <if test="jobNumber!=null">
+        and d.job_number like concat('%',#{jobNumber},'%')
+        </if>
+
+
+        </where>
+        order by d.doctor_id
+
+    </select>
+
+
+
+<!--按照jobNumber查找医生-->
+    <select id="selectDoctorByJobNumber" resultMap="doctorMap">
+        select d.*,dt.*,pt.*
+        from doctors d left join departments dt on d.department_id=dt.department_id
+                       left join professional_titles pt on d.professional_title_id=pt.id
+        <where>
+            job_number=#{jobNumber}
+        </where>
+    </select>
+
+
+<!-- 按照科室找医生 -->
+
+    <select id="selectDoctorByDepartmentId" resultMap="doctorMap">
+        select d.*,dt.*,pt.*
+        from doctors d left join departments dt on d.department_id=dt.department_id
+                       left join professional_titles pt on d.professional_title_id=pt.id
+        where d.department_id=#{departmentId}
+    </select>
+
+</mapper>
